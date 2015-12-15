@@ -8,22 +8,22 @@ local Table = {
       "Venomous Snake",
    },
    ["Totems"] = {
-      ["Mana Spring Totem VIII"] = true,
+      ["Mana Spring Totem"] = true,
       ["Cleansing Totem"] = true,
-      ["Magma Totem VII"] = true,
+      ["Magma Totem"] = true,
       ["Earth Elemental Totem"] = true,
       ["Earthbind Totem"] = true,
-      ["Fire Resistance Totem VI"] = true,
-      ["Flametongue Totem VIII"] = true,
-      ["Frost Resistance Totem VI"] = true,
+      ["Fire Resistance Totem"] = true,
+      ["Flametongue Totem"] = true,
+      ["Frost Resistance Totem"] = true,
       ["Grounding Totem"] = true,
-      ["Healing Stream Totem IX"] = true,
-      ["Nature Resistance Totem VI"] = true,
-      ["Searing Totem X"] = true,
+      ["Healing Stream Totem"] = true,
+      ["Nature Resistance Totem"] = true,
+      ["Searing Totem"] = true,
       ["Sentry Totem"] = true,
-      ["Stoneclaw Totem X"] = true,
-      ["Stoneskin Totem X"] = true,
-      ["Strength of Earth Totem VIII"] = true,
+      ["Stoneclaw Totem"] = true,
+      ["Stoneskin Totem"] = true,
+      ["Strength of Earth Totem"] = true,
       ["Totem of Wrath IV"] = true,
       ["Tremor Totem"] = true,
       ["Windfury Totem"] = true,
@@ -38,7 +38,8 @@ local Table = {
 
 local function UpdateObjects(hp)
    frame = hp:GetParent()
-   local threat, hpborder, cbshield, cbborder, cbicon, overlay, oldname, level, bossicon, raidicon, elite = frame:GetRegions()
+   local threat, hpborder, overlay, oldname, level, skull, raidicons, eliteicon = frame:GetRegions();
+   local healthbarfill = hp:GetRegions()
    local name = oldname:GetText()
 
    overlay:SetAlpha(1)
@@ -60,9 +61,10 @@ local function UpdateObjects(hp)
          break
       end
    end
-
+	
    for totem in pairs(Table["Totems"]) do
       if ( name == totem and Table["Totems"][totem] == true ) then
+		 healthbarfill:SetAlpha(0);
          overlay:SetAlpha(0)
          threat:Hide()
          hpborder:Hide()
@@ -81,6 +83,7 @@ local function UpdateObjects(hp)
          frame.totem:SetHeight(64 *Table.Scale)
          break
       elseif ( name == totem ) then
+		 healthbarfill:SetAlpha(0);
          overlay:SetAlpha(0)
          threat:Hide()
          hpborder:Hide()
@@ -93,9 +96,10 @@ local function UpdateObjects(hp)
 end
 
 local function SkinObjects(frame)
-   local HealthBar, CastBar = frame:GetChildren()
-   local threat, hpborder, cbshield, cbborder, cbicon, overlay, oldname, level, bossicon, raidicon, elite = frame:GetRegions()
 
+   local HealthBar, CastBar = frame:GetChildren()
+   local targetflash, healthborder, glow, name, level, skull, raidicons, eliteicon = frame:GetRegions()
+   
    HealthBar:HookScript("OnShow", UpdateObjects)
    HealthBar:HookScript("OnSizeChanged", UpdateObjects)
 
@@ -108,8 +112,8 @@ local function HookFrames(...)
    for index = 1, select('#', ...) do
       local frame = select(index, ...)
       local region = frame:GetRegions()
-
-      if ( not Table["Nameplates"][frame] and not frame:GetName() and region and region:GetObjectType() == "Texture" and region:GetTexture() == "Interface\\TargetingFrame\\UI-TargetingFrame-Flash" ) then
+	  
+      if ( not Table["Nameplates"][frame] and string.find(frame:GetName() or "", "NamePlate") and region and region:GetObjectType() == "Texture" and region:GetTexture() == "Interface\\TargetingFrame\\UI-TargetingFrame-Flash" ) then
          SkinObjects(frame)                  
          frame.region = region
       end
